@@ -8,8 +8,8 @@ import java.awt.event.*;
 class canvas extends JFrame implements MouseListener, MouseMotionListener, ActionListener{
 
     Canvas canvas;
-
-    
+    JButton button;
+    int prevx, prevy;
     
 	// constructor
 	canvas()
@@ -34,41 +34,81 @@ class canvas extends JFrame implements MouseListener, MouseMotionListener, Actio
         canvas.addMouseListener(this);
         canvas.addMouseMotionListener(this);
 		add(canvas);
-        
+         // Create a clear button. 
+	    button = new JButton ("Clear");
+	    button.setBackground (Color.white);
+        // b button setbounds
+        button.setBounds(180 , 400, 100, 50);
+        add(button);
+        // Add a listenet fir vthe button
+        button.addActionListener (this);
         setVisible(true);
 	}
      // mouse listener  and mouse motion listener methods
 
      public void mousePressed(MouseEvent e)
-     {
-         Graphics gr = canvas.getGraphics();
-  
-         gr.setColor(Color.red);
-  
-         // get X and y position
-        int x = e.getX();
-        int y = e.getY();
-         // draw a Oval at the point
-         // where mouse is moved
-         gr.fillOval(x, y, 10, 10);
-     }
+    {
+        Graphics gr = canvas.getGraphics();
+ 
+        gr.setColor(Color.red);
+ 
+        // get X and y position
+        prevx = e.getX();
+        prevy = e.getY();
+        // draw a Oval at the point
+        // where mouse is moved
+        gr.fillOval(prevx, prevy, 10, 10);
+    }
      
      public void mouseDragged(MouseEvent e)
-     {
-         Graphics gr = canvas.getGraphics();
-         Graphics2D g2= (Graphics2D)gr;
+    {
+        Graphics gr = canvas.getGraphics();
+        Graphics2D g2= (Graphics2D)gr;
+       
+        gr.setColor(Color.red);
+        g2.setStroke(new BasicStroke(5));
+        // get X and y position
+        int x, y;
+        x = e.getX();
+        y = e.getY();
+ 
+        // draw a line with the points where mouse is moved
+        gr.drawLine(prevx, prevy, x, y);
+        prevx=x;
+        prevy=y;
         
-         gr.setColor(Color.red);
-         g2.setStroke(new BasicStroke(5));
-         // get X and y position
-         int x, y;
-         x = e.getX();
-         y = e.getY();
-  
-         // draw an oval with the points where mouse is moved
-         gr.drawLine(x, y, 10, 10);
-         
-     }
+    }
+    public void mouseClicked(MouseEvent e)
+    {
+    }
+ 
+    public void mouseMoved(MouseEvent e)
+    {
+    }
+
+    public void mouseExited(MouseEvent e)
+    {
+    }
+ 
+    public void mouseEntered(MouseEvent e)
+    {
+    }
+ 
+    public void mouseReleased(MouseEvent e)
+    {
+    }
+     // This method is required to implement the  
+    // ActionListener interface. 
+    public void actionPerformed (ActionEvent e)
+    {
+	    String str = e.getActionCommand();
+        if (str.equalsIgnoreCase ("Clear")) {
+	    // Note: must call repaint() of canvas 
+	    // to reset the background. 
+	    canvas.setBackground (Color.gray);
+	    canvas.repaint ();
+	    }
+    }
  
     public static void main (String[] argv)
     {
