@@ -129,48 +129,48 @@ class UiFrame extends JFrame implements MouseListener, MouseMotionListener, Acti
          * 6. Matching
          * 7. O/P
          */
-        // long startTime = System.currentTimeMillis();
-        // PointProcessor pointProcessor = new PointProcessor();
-        // DollarOneRecognizer dollarOneRecognizer = new DollarOneRecognizer();
+        long startTime = System.currentTimeMillis();
+        PointProcessor pointProcessor = new PointProcessor();
+        DollarOneRecognizer dollarOneRecognizer = new DollarOneRecognizer();
 
         // // Resampling the points
-        // ArrayList<Point> resampledPoints = pointProcessor.resample(points);
+        ArrayList<Point> resampledPoints = pointProcessor.resample(points);
 
         // //Rotate the points accordingly
         // // Get the centroid of the gesture drawn
-        // Point centroid = pointProcessor.centroid(resampledPoints);
+        Point centroid = pointProcessor.centroid(resampledPoints);
         // // Get the first poiint after resampling
-        // Point firstPoint = resampledPoints.get(0);
+        Point firstPoint = resampledPoints.get(0);
         // // Calculate the slope to get the rotation angle
-        // double slope = Math.atan2((firstPoint.y-centroid.y),(firstPoint.x-centroid.x));
+        double slope = Math.atan2((firstPoint.y-centroid.y),(firstPoint.x-centroid.x));
         // // Rotate by function to rotate the points accordingl
         // //ArrayList<Point> rotatedPoints = pointProcessor.rotateBy(resampledPoints, -1*slope,centroid);
-        // ArrayList<Point> rotatedPoints = pointProcessor.rotateBy(resampledPoints, -1*slope,centroid);
+        ArrayList<Point> rotatedPoints = pointProcessor.rotateBy(resampledPoints, -1*slope,centroid);
         
         // //Scale the gesture
-        // pointProcessor.scale(rotatedPoints);
+        pointProcessor.scale(rotatedPoints);
 
         // //Translate the gesture
-        // ArrayList<Point> translatedPoints = pointProcessor.translate(rotatedPoints);
+        ArrayList<Point> translatedPoints = pointProcessor.translate(rotatedPoints);
         
         // //Matching
-        // String result = dollarOneRecognizer.recognize(translatedPoints);
+        String result = dollarOneRecognizer.recognize(translatedPoints);
         // // Displaying the match
         // //String[] str = result.split(" ");
-        // String[] str = result.split("-");
-        // System.out.println(result);
+        String[] str = result.split("-");
+        System.out.println(result);
         // // Getting the match
-        // String templateName = str[0];
+        String templateName = str[0];
         // // Getting the score
-        // double score = Double.parseDouble(str[1]);
-        // long endTime = System.currentTimeMillis();
+        double score = Double.parseDouble(str[1]);
+        long endTime = System.currentTimeMillis();
         // // Set the title to the match found and the score calculated.
-        // this.setTitle("Result: "+templateName+" ("+score+") in "+(endTime-startTime)+"ms");
+        this.setTitle("Result: "+templateName+" ("+score+") in "+(endTime-startTime)+"ms");
 
 
         // //Draw the points
-        // Graphics gr = canvas.getGraphics();
-        // gr.setColor(Color.blue);
+        Graphics gr = canvas.getGraphics();
+        gr.setColor(Color.blue);
     }
  
     public static void main (String[] argv)
