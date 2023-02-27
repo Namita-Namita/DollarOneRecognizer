@@ -19,15 +19,19 @@ class UiFrame extends JFrame implements MouseListener, MouseMotionListener, Acti
     StringBuilder Filename = new StringBuilder("Arrow1");
     StringBuilder randomGesture = new StringBuilder("Arrow");
     int i = 0;
-    int n = 1;
+    int n = 0;
     JLabel Label2 = new JLabel("Draw Arrow");
     JLabel Label4 = new JLabel("Draw the gesture in one stroke and click on submit button");
     JLabel Label3 = new JLabel("Click Draw Again button in case of any mistake.");
     // Load the image from file
     ImageIcon imageIcon = new ImageIcon("Arrow.png");
-
+    Image image = imageIcon.getImage();
+    int newWidth = imageIcon.getIconWidth() / 2; // scale down to half the original width
+    int newHeight = imageIcon.getIconHeight() / 2; // scale down to half the original height
+    Image scaledImage = image.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+    ImageIcon scaledIcon = new ImageIcon(scaledImage);
     // Create a JLabel and set its icon to the image
-    JLabel label = new JLabel(imageIcon);
+    JLabel label = new JLabel(scaledIcon);
 
     // constructor to set up the frame with canvas and clear button
     UiFrame() {
@@ -70,32 +74,32 @@ class UiFrame extends JFrame implements MouseListener, MouseMotionListener, Acti
         // Add a listener for the button to listen to the button clicks
         button2.addActionListener(this);
 
-        gesture.put("Arrow", 9);
-        gesture.put("X", 1);
-        gesture.put("Rectangle", 1);
-        gesture.put("Delete", 1);
-        gesture.put("Triangle", 1);
-        gesture.put("Circle", 9);
-        gesture.put("Check", 9);
-        gesture.put("Caret", 1);
-        gesture.put("Pigtail", 1);
-        gesture.put("Zigzag", 1);
-        gesture.put("Question", 9);
-        gesture.put("Right_square_bracket", 1);
-        gesture.put("Left_square_bracket", 1);
-        gesture.put("Right_curly_brace", 1);
-        gesture.put("Left_curly_brace", 1);
-        gesture.put("V", 1);
-        gesture.put("Star", 1);
+        gesture.put("Arrow", 1);
+        gesture.put("X", 0);
+        gesture.put("Rectangle", 0);
+        gesture.put("Delete", 0);
+        gesture.put("Triangle", 0);
+        gesture.put("Circle", 0);
+        gesture.put("Check", 0);
+        gesture.put("Caret", 0);
+        gesture.put("Pigtail", 0);
+        gesture.put("Zigzag", 0);
+        gesture.put("Question", 0);
+        gesture.put("Right_square_bracket", 0);
+        gesture.put("Left_square_bracket", 0);
+        gesture.put("Right_curly_brace", 0);
+        gesture.put("Left_curly_brace", 0);
+        gesture.put("V", 0);
+        gesture.put("Star", 0);
 
         Label2.setBounds(10, 450, 800, 70); // x, y, width, height
         Label4.setBounds(10, 450, 800, 110); // x, y, width, height
         Label3.setBounds(10, 450, 800, 150); // x, y, width, height
         this.setTitle("Arrow #" + gesture.get("Arrow"));
-        gesture.put("Arrow", gesture.get("Arrow") + 1);
+        // gesture.put("Arrow", gesture.get("Arrow") + 1);
 
         // Set the position and size of the label
-        label.setBounds(100, 550, imageIcon.getIconWidth(), imageIcon.getIconHeight());
+        label.setBounds(100, 500, imageIcon.getIconWidth(), imageIcon.getIconHeight());
 
         // Add the label to the frame
         add(label);
@@ -111,77 +115,97 @@ class UiFrame extends JFrame implements MouseListener, MouseMotionListener, Acti
     // ActionListener interface.
     public void actionPerformed(ActionEvent e) {
         String str = e.getActionCommand();
-
+        WriteXML w = new WriteXML();
         // points.clear();
-        if (str.equalsIgnoreCase("Re-Draw")) {
+        if (str.equalsIgnoreCase("Draw Again")) {
             // Note: must call repaint() of canvas
             // to reset the background.
             canvas.setBackground(Color.gray);
             canvas.repaint();
+            points.clear();
         }
         // Set the title to the match found and the score calculated.
         // this.setTitle("Result: "+templateName+" ("+score+") in
         // "+(endTime-startTime)+"ms");
-        if (str.equalsIgnoreCase("Submit") && n <= 170) {
+        else if (str.equalsIgnoreCase("Submit") && n < 169) {
 
-            WriteXML w = new WriteXML();
-            //System.out.println(gesture.get(randomGesture.toString()));
-            if (gesture.get(randomGesture.toString()) <= 9) {
+            if(points.size()==0){
+                JOptionPane.showMessageDialog(null, "Gesuture not drawn, Re-Draw "+randomGesture);
+                //Label2.setText("");
+                //Label2.setText("Gesuture not drawn Re-Draw " + randomGesture);
+            }
+            else if (gesture.get(randomGesture.toString()) == 10) {
                 n++;
-                gesture.put(randomGesture.toString(), gesture.get(randomGesture.toString()) + 1);
+                System.out.println("n=" + n);
                 w.saveGesture(points, randomGesture.toString(), Filename.toString());
                 canvas.setBackground(Color.gray);
                 canvas.repaint();
+                points.clear();
+                gesture.remove(randomGesture.toString());
                 Random random = new Random();
                 Object[] keys = gesture.keySet().toArray();
+                System.out.println(gesture);
                 String randomges = (String) keys[random.nextInt(keys.length)];
-                // System.out.println(randomGesture);
+                gesture.put(randomges.toString(), gesture.get(randomges.toString()) + 1);
+                System.out.println(gesture.get(randomges.toString()) + "-----" + randomges.toString());
                 // Create a label with text
                 randomGesture.replace(0, randomGesture.length(), randomges);
                 String img = randomges.concat(".png");
                 ImageIcon newImageIcon = new ImageIcon(img);
                 // Set the icon of the label to the new image
-                label.setIcon(newImageIcon);
+                Image image = newImageIcon.getImage();
+                int newWidth = newImageIcon.getIconWidth() / 2; // scale down to half the original width
+                int newHeight = newImageIcon.getIconHeight() / 2; // scale down to half the original height
+                Image scaledImage = image.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+                ImageIcon scaledIcon = new ImageIcon(scaledImage);
+                label.setIcon(scaledIcon);
+                Label2.setText("Draw " + randomGesture);
+                Label3.setText("Draw the gesture in one stroke and click on submit button");
+                Label4.setText(
+                        "Re-draw by clicking re-draw button if the gesture you are not satisfied with the gesture you drew.");
+                this.setTitle(randomges + " #" + gesture.get(randomges));
+                Filename = new StringBuilder(randomGesture.append(gesture.get(randomges)).toString());
+                // gesture.put(randomges, gesture.get(randomges) + 1);
+                randomGesture.replace(0, randomGesture.length(), randomges);
+                // w.saveGesture(points, randomGesture.toString(), Filename.toString());
+                // n++;
+            }
+            // System.out.println(gesture.get(randomGesture.toString()));
+            else if (gesture.get(randomGesture.toString()) < 10) {
+                n++;
+                System.out.println("n=" + n);
+                w.saveGesture(points, randomGesture.toString(), Filename.toString());
+                canvas.setBackground(Color.gray);
+                canvas.repaint();
+                points.clear();
+                Random random = new Random();
+                Object[] keys = gesture.keySet().toArray();
+                String randomges = (String) keys[random.nextInt(keys.length)];
+                gesture.put(randomges.toString(), gesture.get(randomges.toString()) + 1);
+                System.out.println(gesture.get(randomges.toString()) + "-----" + randomges.toString());
+                // System.out.println(randomGesture);
+                // Create a label with text
+                randomGesture.replace(0, randomGesture.length(), randomges);
+                String img = randomges.concat(".png");
+                ImageIcon newImageIcon = new ImageIcon(img);
+                Image image = newImageIcon.getImage();
+                int newWidth = newImageIcon.getIconWidth() / 2; // scale down to half the original width
+                int newHeight = newImageIcon.getIconHeight() / 2; // scale down to half the original height
+                Image scaledImage = image.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+                ImageIcon scaledIcon = new ImageIcon(scaledImage);
+                // Set the icon of the label to the new image
+                label.setIcon(scaledIcon);
                 Label2.setText("Draw " + randomGesture);
                 this.setTitle(randomges + " #" + gesture.get(randomges));
                 Filename = new StringBuilder(randomGesture.append(gesture.get(randomges)).toString());
                 randomGesture.replace(0, randomGesture.length(), randomges);
                 // System.out.println(Filename);
             }
-            else {
-                canvas.setBackground(Color.gray);
-                canvas.repaint();
-                // JLabel Label5= new JLabel();
-                // Label5.setBounds(10, 350, 800, 70);
-                // Label5.setText("Gesture "+ randomGesture.toString()+" complete");
-                //Label3.setText(" ");
-                //Label4.setText(" ");
-                //label.setIcon(null);
-                gesture.remove(randomGesture.toString());
-                Random random = new Random();
-                Object[] keys = gesture.keySet().toArray();
-                System.out.println(gesture);
-                String randomges = (String) keys[random.nextInt(keys.length)];
-                // System.out.println(randomGesture);
-                // Create a label with text
-                randomGesture.replace(0, randomGesture.length(), randomges);
-                String img = randomges.concat(".png");
-                ImageIcon newImageIcon = new ImageIcon(img);
-                // Set the icon of the label to the new image
-                label.setIcon(newImageIcon);
-                Label2.setText("Draw " + randomGesture);
-                Label3.setText("Draw the gesture in one stroke and click on submit button");
-                Label4.setText("Re-draw by clicking re-draw button if the gesture you are not satisfied with the gesture you drew.");
-                this.setTitle(randomges + " #" + gesture.get(randomges));
-                Filename = new StringBuilder(randomGesture.append(gesture.get(randomges)).toString());
-                gesture.put(randomges, gesture.get(randomges) + 1);
-                randomGesture.replace(0, randomGesture.length(), randomges);
-                //w.saveGesture(points, randomGesture.toString(), Filename.toString());
-                //n++;
-
-            }
-        } else if (n == 171) {
-            Label2.setText("Task Complete, Thank you");
+        } else if (str.equalsIgnoreCase("Submit") && n == 169) {
+            n++;
+            System.out.println("n=" + n);
+            w.saveGesture(points, randomGesture.toString(), Filename.toString());
+            Label2.setText("");
             Label3.setText(" ");
             Label4.setText(" ");
             label.setIcon(null);
@@ -189,6 +213,13 @@ class UiFrame extends JFrame implements MouseListener, MouseMotionListener, Acti
             // to reset the background.
             canvas.setBackground(Color.gray);
             canvas.repaint();
+            points.clear();
+            JOptionPane.showMessageDialog(null, "Task Complete! Thank you for participation. :)");
+            remove(button1);
+            remove(button2);
+            remove(label);
+            revalidate();
+            repaint();
         }
 
     }

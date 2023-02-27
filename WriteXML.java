@@ -24,7 +24,7 @@ public class WriteXML{/**
      * @param fileName The filename for the gesture. (e.g. arrow.xml)
      */
     public void saveGesture(ArrayList<Point> gesture, String gestureName, String fileName){
-        String dirPath = "xml".concat().concat(gestureName);
+        String dirPath = "xml/".concat(gestureName);
         String filePath = dirPath.concat("/").concat(fileName);
 
         // Create the directory if it doesn't already exist
