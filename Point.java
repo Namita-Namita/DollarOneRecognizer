@@ -22,7 +22,7 @@ public class Point
   public double getY(){
 	return this.y;
   }
-  public double getTime(){
+  public long getTime(){
 		return this.t;
   }
 }

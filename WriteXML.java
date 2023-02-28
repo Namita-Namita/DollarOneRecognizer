@@ -6,13 +6,13 @@ import org.w3c.dom.*;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+
 //import java.util.ArrayDeque;
 import java.util.ArrayList;
 //import java.util.Deque;
@@ -23,7 +23,7 @@ public class WriteXML{/**
      * @param gestureName The name of the gesture
      * @param fileName The filename for the gesture. (e.g. arrow.xml)
      */
-    public void saveGesture(ArrayList<Point> gesture, String gestureName, String fileName){
+    public void saveGesture(ArrayList<Point> gesture, String gestureName, String fileName, int num){
         String dirPath = "xml/".concat(gestureName);
         String filePath = dirPath.concat("/").concat(fileName);
 
@@ -37,7 +37,7 @@ public class WriteXML{/**
             // Path path = Paths.get(getClass().getClassLoader().getResource("").toURI());
             // String filePath =  path.getParent().resolve(fileName).toString();
             // filePath = filePath.replace("%20", " ");
-            System.out.println(filePath);
+            // System.out.println(filePath);
 
             File file = new File(filePath);
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -46,14 +46,14 @@ public class WriteXML{/**
             documentBuilderFactory.setValidating(false);
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
             Document document = documentBuilder.newDocument();
-            Text lineBreak = document.createTextNode("\n");
+            //Text lineBreak = document.createTextNode("\n");
             //Element element = document.createElement("newline");
             Element gestureTag = document.createElement("Gesture");
             //document.appendChild(lineBreak);
-            gestureTag.setAttribute("Name", gestureName);
+            gestureTag.setAttribute("Name", fileName);
+            gestureTag.setAttribute("Number", Integer.toString(num));
             gestureTag.setAttribute("NumPts", Integer.toString(gesture.size()));
-            gestureTag.setAttribute("Milliseconds", Integer.toString((int)(gesture.get(gesture.size()-1).getTime()-gesture.get(0).getTime())/1000));
-            document.appendChild(gestureTag);
+            gestureTag.setAttribute("Milliseconds", Integer.toString((int)(gesture.get(gesture.size()-1).getTime()-gesture.get(0).getTime())));
             //Text lineBreak = document.createTextNode("\n");
            // Element element1 = document.getDocumentElement();
             //document.appendChild(lineBreak);
@@ -64,18 +64,19 @@ public class WriteXML{/**
                 //System.out.println(point.getX());
                 //System.out.println(point.getY());
                 //gestureTag.appendChild(lineBreak);
+                pointTag.setAttribute("T", Long.toString(Math.round(point.getTime() / Math.pow(10, Math.floor(Math.log10(point.getTime())) - 3))));
                 pointTag.setAttribute("X", Double.toString(point.getX()));
                 pointTag.setAttribute("Y", Double.toString(point.getY()));
-                pointTag.setAttribute("T", Double.toString(point.getTime()));
-                pointTag.appendChild(lineBreak);
+                //pointTag.appendChild(lineBreak);
                 gestureTag.appendChild(pointTag);
                 //pointTag.appendChild(lineBreak);
-                gestureTag.appendChild(lineBreak);
+                //gestureTag.appendChild(lineBreak);
                 
             }
-
+            document.appendChild(gestureTag);
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             DOMSource source = new DOMSource(document);
             StreamResult result = new StreamResult(file);
             transformer.transform(source, result);

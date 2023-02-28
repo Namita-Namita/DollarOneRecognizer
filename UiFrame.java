@@ -20,11 +20,12 @@ class UiFrame extends JFrame implements MouseListener, MouseMotionListener, Acti
     StringBuilder randomGesture = new StringBuilder("Arrow");
     int i = 0;
     int n = 0;
-    JLabel Label2 = new JLabel("Draw Arrow");
+    JLabel Label1= new JLabel("Instructions:");
+    JLabel Label2 = new JLabel("Draw Arrow. You can refer the below image for reference.");
     JLabel Label4 = new JLabel("Draw the gesture in one stroke and click on submit button");
     JLabel Label3 = new JLabel("Click Draw Again button in case of any mistake.");
     // Load the image from file
-    ImageIcon imageIcon = new ImageIcon("Arrow.png");
+    ImageIcon imageIcon = new ImageIcon("res/image/Arrow.png");
     Image image = imageIcon.getImage();
     int newWidth = imageIcon.getIconWidth() / 2; // scale down to half the original width
     int newHeight = imageIcon.getIconHeight() / 2; // scale down to half the original height
@@ -56,18 +57,24 @@ class UiFrame extends JFrame implements MouseListener, MouseMotionListener, Acti
         add(canvas);
         // Create a clear button labeled Clear
         button1 = new JButton("Draw Again");
+        button1.setUI(new MyButtonUI());
         // Sets the background of the button to white.
-        button1.setBackground(Color.white);
+        //button1.setBackground(Color.BLUE);
+        //button1.setOpaque(true);
+       // button1.setForeground(Color.white);
         // button setbounds function to set the sezi and placement of the button
-        button1.setBounds(80, 400, 100, 50);
+        //button1.setBounds(80, 400, 100, 50);
         add(button1);
         // Add a listener for the button to listen to the button clicks
         button1.addActionListener(this);
         button2 = new JButton("Submit");
         // Sets the background of the button to white.
-        button2.setBackground(Color.white);
+        button2.setUI(new MyButtonUI());
+        button2.setBackground(Color.BLUE);
+        //button2.setOpaque(true);
+        //button2.setForeground(Color.white);
         // button setbounds function to set the sezi and placement of the button
-        button2.setBounds(300, 400, 100, 50);
+        button2.setBounds(400, 420, 120, 50);
         // Border border = BorderFactory.createLineBorder(Color.BLACK);
         // button2.setBorder(border);
         add(button2);
@@ -91,10 +98,10 @@ class UiFrame extends JFrame implements MouseListener, MouseMotionListener, Acti
         gesture.put("Left_curly_brace", 0);
         gesture.put("V", 0);
         gesture.put("Star", 0);
-
-        Label2.setBounds(10, 450, 800, 70); // x, y, width, height
-        Label4.setBounds(10, 450, 800, 110); // x, y, width, height
-        Label3.setBounds(10, 450, 800, 150); // x, y, width, height
+        Label1.setBounds(10, 450, 800, 70);
+        Label2.setBounds(10, 450, 800, 110); // x, y, width, height
+        Label4.setBounds(10, 450, 800, 150); // x, y, width, height
+        Label3.setBounds(10, 450, 800, 190); // x, y, width, height
         this.setTitle("Arrow #" + gesture.get("Arrow"));
         // gesture.put("Arrow", gesture.get("Arrow") + 1);
 
@@ -104,6 +111,7 @@ class UiFrame extends JFrame implements MouseListener, MouseMotionListener, Acti
         // Add the label to the frame
         add(label);
         // Add the panel to the frame and show the frame
+        add(Label1);
         add(Label2);
         add(Label4);
         add(Label3);
@@ -136,21 +144,21 @@ class UiFrame extends JFrame implements MouseListener, MouseMotionListener, Acti
             }
             else if (gesture.get(randomGesture.toString()) == 10) {
                 n++;
-                System.out.println("n=" + n);
-                w.saveGesture(points, randomGesture.toString(), Filename.toString());
+                //System.out.println("n=" + n);
+                w.saveGesture(points, randomGesture.toString(), Filename.toString(), gesture.get(randomGesture.toString()) );
                 canvas.setBackground(Color.gray);
                 canvas.repaint();
                 points.clear();
                 gesture.remove(randomGesture.toString());
                 Random random = new Random();
                 Object[] keys = gesture.keySet().toArray();
-                System.out.println(gesture);
+                //System.out.println(gesture);
                 String randomges = (String) keys[random.nextInt(keys.length)];
                 gesture.put(randomges.toString(), gesture.get(randomges.toString()) + 1);
-                System.out.println(gesture.get(randomges.toString()) + "-----" + randomges.toString());
+                //System.out.println(gesture.get(randomges.toString()) + "-----" + randomges.toString());
                 // Create a label with text
                 randomGesture.replace(0, randomGesture.length(), randomges);
-                String img = randomges.concat(".png");
+                String img = "res/image/".concat((randomges.concat(".png")));
                 ImageIcon newImageIcon = new ImageIcon(img);
                 // Set the icon of the label to the new image
                 Image image = newImageIcon.getImage();
@@ -159,7 +167,7 @@ class UiFrame extends JFrame implements MouseListener, MouseMotionListener, Acti
                 Image scaledImage = image.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
                 ImageIcon scaledIcon = new ImageIcon(scaledImage);
                 label.setIcon(scaledIcon);
-                Label2.setText("Draw " + randomGesture);
+                Label2.setText("Draw " + randomGesture+ ". You can refer the below image for reference.");
                 Label3.setText("Draw the gesture in one stroke and click on submit button");
                 Label4.setText(
                         "Re-draw by clicking re-draw button if the gesture you are not satisfied with the gesture you drew.");
@@ -173,8 +181,8 @@ class UiFrame extends JFrame implements MouseListener, MouseMotionListener, Acti
             // System.out.println(gesture.get(randomGesture.toString()));
             else if (gesture.get(randomGesture.toString()) < 10) {
                 n++;
-                System.out.println("n=" + n);
-                w.saveGesture(points, randomGesture.toString(), Filename.toString());
+                //System.out.println("n=" + n);
+                w.saveGesture(points, randomGesture.toString(), Filename.toString(), gesture.get(randomGesture.toString()));
                 canvas.setBackground(Color.gray);
                 canvas.repaint();
                 points.clear();
@@ -182,11 +190,11 @@ class UiFrame extends JFrame implements MouseListener, MouseMotionListener, Acti
                 Object[] keys = gesture.keySet().toArray();
                 String randomges = (String) keys[random.nextInt(keys.length)];
                 gesture.put(randomges.toString(), gesture.get(randomges.toString()) + 1);
-                System.out.println(gesture.get(randomges.toString()) + "-----" + randomges.toString());
+                //System.out.println(gesture.get(randomges.toString()) + "-----" + randomges.toString());
                 // System.out.println(randomGesture);
                 // Create a label with text
                 randomGesture.replace(0, randomGesture.length(), randomges);
-                String img = randomges.concat(".png");
+                String img = "res/image/".concat((randomges.concat(".png")));
                 ImageIcon newImageIcon = new ImageIcon(img);
                 Image image = newImageIcon.getImage();
                 int newWidth = newImageIcon.getIconWidth() / 2; // scale down to half the original width
@@ -195,7 +203,7 @@ class UiFrame extends JFrame implements MouseListener, MouseMotionListener, Acti
                 ImageIcon scaledIcon = new ImageIcon(scaledImage);
                 // Set the icon of the label to the new image
                 label.setIcon(scaledIcon);
-                Label2.setText("Draw " + randomGesture);
+                Label2.setText("Draw " + randomGesture+ ". You can refer the below image for reference.");
                 this.setTitle(randomges + " #" + gesture.get(randomges));
                 Filename = new StringBuilder(randomGesture.append(gesture.get(randomges)).toString());
                 randomGesture.replace(0, randomGesture.length(), randomges);
@@ -203,8 +211,9 @@ class UiFrame extends JFrame implements MouseListener, MouseMotionListener, Acti
             }
         } else if (str.equalsIgnoreCase("Submit") && n == 169) {
             n++;
-            System.out.println("n=" + n);
-            w.saveGesture(points, randomGesture.toString(), Filename.toString());
+            //System.out.println("n=" + n);
+            w.saveGesture(points, randomGesture.toString(), Filename.toString(), gesture.get(randomGesture.toString()));
+            Label1.setText("");
             Label2.setText("");
             Label3.setText(" ");
             Label4.setText(" ");
@@ -229,7 +238,7 @@ class UiFrame extends JFrame implements MouseListener, MouseMotionListener, Acti
     // mouse listener and mouse motion listener methods
     // mousepressed method to listen to the pressed action of the mouse.
     public void mousePressed(MouseEvent e) {
-        startTime = System.currentTimeMillis() * 1000;
+        startTime = System.currentTimeMillis();
         Graphics gr = canvas.getGraphics();
 
         gr.setColor(Color.red);
@@ -246,7 +255,7 @@ class UiFrame extends JFrame implements MouseListener, MouseMotionListener, Acti
 
     // mousedragged method to listen to the dragged action of the mouse.
     public void mouseDragged(MouseEvent e) {
-        endTime = System.currentTimeMillis() * 1000;
+        endTime = System.currentTimeMillis();
         Graphics gr = canvas.getGraphics();
         Graphics2D g2 = (Graphics2D) gr;
         // stes the color of the gesture line drawn to red.
@@ -347,5 +356,15 @@ class UiFrame extends JFrame implements MouseListener, MouseMotionListener, Acti
         // creates a canvas object
         new UiFrame();
 
+    }
+}
+class MyButtonUI extends javax.swing.plaf.basic.BasicButtonUI {
+    @Override
+    public void installDefaults(AbstractButton button) {
+        super.installDefaults(button);
+        button.setBackground(Color.RED); // Set the background color
+        button.setOpaque(true); // Ensure that the button is opaque
+        button.setBounds(150, 420, 120, 50);
+        button.setForeground(Color.WHITE);
     }
 }
