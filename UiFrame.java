@@ -1,86 +1,102 @@
+/*
+ * @author Namita Namita
+ */
+// Import statement for all necessary libraries
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.border.Border;
-
 import java.awt.event.*;
 import java.util.*;
 
-// a UiFrame class to instantiate a blank ‘canvas’ to the screen using GUI elements
-//listen for mouse or touch events on the canvas and draw them as the user makes them
-// allow the user to clear the canvas. 
+// A class called UiFrame which extends JFrame and implements MouseListener, MouseMotionListener, and ActionListener
+// This class creates a blank canvas on the screen using GUI elements
+// It listens for mouse or touch events on the canvas and draws them as the user makes them
+// It also allows the user to clear the canvas
 class UiFrame extends JFrame implements MouseListener, MouseMotionListener, ActionListener {
 
+    // JButton button1 and button2 to add on the GUI for submitting the gesture and
+    // re drawing
+    // when the user needs to draw again.
     JButton button1, button2;
+    // canvas variable is declared to launch canvas in the frame
     Canvas canvas;
+    // prevx and prevy integfers are declared to store previous points
     int prevx, prevy;
+    // A hanshmap gesture is declared to store the gesture with the count of
+    // samples.
     Map<String, Integer> gesture = new HashMap<>();
-    // ArrayList DS to store array of points.
+    // ArrayList points declared to store an array of points.
     ArrayList<Point> points = new ArrayList<>();
+    // Filename string is declared to store the name of the file to store the sample
+    // into
     StringBuilder Filename = new StringBuilder("Arrow1");
+    // randomGesture string is declared to store the name of the gesture randomly
+    // choosen
     StringBuilder randomGesture = new StringBuilder("Arrow");
     int i = 0;
     int n = 0;
-    JLabel Label1= new JLabel("Instructions:");
-    JLabel Label2 = new JLabel("Draw Arrow. You can refer the below image for reference.");
+    // JLabels are declared to preform the display function for texts in the frame.
+    JLabel Label1 = new JLabel("Instructions:");
+    JLabel Label5 = new JLabel("There are 16 different gestures and you will be presented with all of them in random order.");
+    JLabel Label6 = new JLabel("You will be asked to draw each gesture 10 times randomly one by one.");
+    JLabel Label7 = new JLabel("The count is shown on top of the screen with the gesture name.");
+    JLabel Label2 = new JLabel("Draw Arrow. You can refer the image for reference.");
     JLabel Label4 = new JLabel("Draw the gesture in one stroke and click on submit button");
     JLabel Label3 = new JLabel("Click Draw Again button in case of any mistake.");
-    // Load the image from file
+    // Loads an image from file and scale it down to half the original size
     ImageIcon imageIcon = new ImageIcon("res/image/Arrow.png");
     Image image = imageIcon.getImage();
-    int newWidth = imageIcon.getIconWidth() / 2; // scale down to half the original width
-    int newHeight = imageIcon.getIconHeight() / 2; // scale down to half the original height
+    int newWidth = imageIcon.getIconWidth() / 2; // scale down the width of the image to half the original width
+    int newHeight = imageIcon.getIconHeight() / 2; // scale down the height of the image to half the original height
     Image scaledImage = image.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
     ImageIcon scaledIcon = new ImageIcon(scaledImage);
-    // Create a JLabel and set its icon to the image
+    // Creates a JLabel "label" and set its icon to the scaled image "scaledIcon"
     JLabel label = new JLabel(scaledIcon);
 
-    // constructor to set up the frame with canvas and clear button
+    // constructor to set up the frame with canvas, buttons and texts to make the
+    // GUI user friendly
     UiFrame() {
         super("canvas");
 
-        // create a empty canvas
+        // Creates an empty canvas and set its size and background color
         canvas = new Canvas() {
             public void paint(Graphics gr) {
             }
         };
-        // sets the frame to put canvas as a component
+        // Sets the layout to null and size of the frame to 900*1000 pixels
         setLayout(null);
-        // sets size of the frame 500*500 square
-        setSize(800, 800);
-        // set background for the canvas with color gray
+        setSize(900, 1100);
+        // sets the background of the canvas with color gray
         canvas.setBackground(Color.gray);
-        // add mouse listener and mouse motion listener for mouse actions
+        // Adds mouse listeners for mouse actions on the canvas
         canvas.addMouseListener(this);
         canvas.addMouseMotionListener(this);
-        // set size of the canvas in the frame- 500*400
-        canvas.setSize(800, 400);
+        // Sets the size of the canvas in the frame to 900*400 pixels and add it to the
+        // frame
+        canvas.setSize(900, 400);
         add(canvas);
-        // Create a clear button labeled Clear
+        // Creates a "Draw Again" button, set other properties of the button
+        // like background color, button size, button placement and add it to the frame
         button1 = new JButton("Draw Again");
         button1.setUI(new MyButtonUI());
-        // Sets the background of the button to white.
-        //button1.setBackground(Color.BLUE);
-        //button1.setOpaque(true);
-       // button1.setForeground(Color.white);
-        // button setbounds function to set the sezi and placement of the button
-        //button1.setBounds(80, 400, 100, 50);
         add(button1);
-        // Add a listener for the button to listen to the button clicks
+        // Adds a listener for the "Draw Again" button to listen to button clicks
         button1.addActionListener(this);
+        // Create a "Submit" button, set other properties of the button
+        // like background color, button size, button placement and add it to the frame
         button2 = new JButton("Submit");
-        // Sets the background of the button to white.
         button2.setUI(new MyButtonUI());
         button2.setBackground(Color.BLUE);
-        //button2.setOpaque(true);
-        //button2.setForeground(Color.white);
+        // button2.setOpaque(true);
+        // button2.setForeground(Color.white);
         // button setbounds function to set the sezi and placement of the button
-        button2.setBounds(400, 420, 120, 50);
+        button2.setBounds(450, 420, 120, 50);
         // Border border = BorderFactory.createLineBorder(Color.BLACK);
         // button2.setBorder(border);
         add(button2);
-        // Add a listener for the button to listen to the button clicks
+        // Adds a listener for the "Submit" button to listen to button clicks
         button2.addActionListener(this);
-
+        // Adds all 16 gestures to the hashmap with the count to 0 as the samples taken
+        // initially is 0.
         gesture.put("Arrow", 1);
         gesture.put("X", 0);
         gesture.put("Rectangle", 0);
@@ -91,7 +107,7 @@ class UiFrame extends JFrame implements MouseListener, MouseMotionListener, Acti
         gesture.put("Caret", 0);
         gesture.put("Pigtail", 0);
         gesture.put("Zigzag", 0);
-        gesture.put("Question", 0);
+        // gesture.put("Question", 0);
         gesture.put("Right_square_bracket", 0);
         gesture.put("Left_square_bracket", 0);
         gesture.put("Right_curly_brace", 0);
@@ -102,32 +118,44 @@ class UiFrame extends JFrame implements MouseListener, MouseMotionListener, Acti
         Label2.setBounds(10, 450, 800, 110); // x, y, width, height
         Label4.setBounds(10, 450, 800, 150); // x, y, width, height
         Label3.setBounds(10, 450, 800, 190); // x, y, width, height
+        Label5.setBounds(10, 450, 800, 230); // x, y, width, height
+        Label6.setBounds(10, 450, 800, 270); // x, y, width, height
+        Label7.setBounds(10, 450, 800, 310); // x, y, width, height
         this.setTitle("Arrow #" + gesture.get("Arrow"));
         // gesture.put("Arrow", gesture.get("Arrow") + 1);
 
-        // Set the position and size of the label
-        label.setBounds(100, 500, imageIcon.getIconWidth(), imageIcon.getIconHeight());
+        // Sets the position and size of the label where the imageicon is setting
+        label.setBounds(550, 430, imageIcon.getIconWidth(), imageIcon.getIconHeight());
 
-        // Add the label to the frame
+        // Adds the label to the frame for the image to display on the GUI
         add(label);
-        // Add the panel to the frame and show the frame
+        // Adds the labels to the frame for the all texts to be visible on the GUI and
+        // sets the frame to be visible
         add(Label1);
         add(Label2);
         add(Label4);
         add(Label3);
+        add(Label5);
+        add(Label6);
+        add(Label7);
         setVisible(true);
 
     }
 
-    // This method is required to implement the
-    // ActionListener interface.
+    /**
+     * 
+     * This method is called when the Submit and Draw Again buttons are clicked
+     * 
+     * It implements the ActionListener interface
+     */
     public void actionPerformed(ActionEvent e) {
         String str = e.getActionCommand();
         WriteXML w = new WriteXML();
         // points.clear();
         if (str.equalsIgnoreCase("Draw Again")) {
-            // Note: must call repaint() of canvas
-            // to reset the background.
+            // If the button "Draw Again" is clicked by the user
+            // the canvas will be clared and reset witth canvas.repaint
+            // All the points saved on mouse actions will be cleared when the button is clicked.
             canvas.setBackground(Color.gray);
             canvas.repaint();
             points.clear();
@@ -135,27 +163,37 @@ class UiFrame extends JFrame implements MouseListener, MouseMotionListener, Acti
         // Set the title to the match found and the score calculated.
         // this.setTitle("Result: "+templateName+" ("+score+") in
         // "+(endTime-startTime)+"ms");
-        else if (str.equalsIgnoreCase("Submit") && n < 169) {
-
-            if(points.size()==0){
-                JOptionPane.showMessageDialog(null, "Gesuture not drawn, Re-Draw "+randomGesture);
-                //Label2.setText("");
-                //Label2.setText("Gesuture not drawn Re-Draw " + randomGesture);
-            }
+        // If the user clicks "Submit" button and the user trial is less than 159 times
+        // write the points in the designated gesture file.
+        else if (str.equalsIgnoreCase("Submit") && n < 159) {
+            // if the submit button is clicked without drawing anything on the canvas
+            // a dialog box will pop up with a message.
+            if (points.size() == 0) {
+                JOptionPane.showMessageDialog(null, "Gesuture not drawn, Re-Draw " + randomGesture);
+                // Label2.setText("");
+                // Label2.setText("Gesuture not drawn Re-Draw " + randomGesture);
+            } // If a gesture say "X" is drawn 10 times, 10th iteration  will be written 
+            //to the file as well as removed from hashmap so that it is not shown to the user as a gesture to draw for sample collection
             else if (gesture.get(randomGesture.toString()) == 10) {
                 n++;
-                //System.out.println("n=" + n);
-                w.saveGesture(points, randomGesture.toString(), Filename.toString(), gesture.get(randomGesture.toString()) );
+                // write the drawn gesture to the file and clear the canvas for another gesture to be drawn
+                w.saveGesture(points, randomGesture.toString(), Filename.toString(),
+                        gesture.get(randomGesture.toString()));
                 canvas.setBackground(Color.gray);
                 canvas.repaint();
+                // All the points saved on mouse actions will be cleared after it is written to the file.
                 points.clear();
+                // gesture is removed from hashmap so that it is not shown to the user as a gesture to draw for sample collection
                 gesture.remove(randomGesture.toString());
+                // Selecting a random gedsture from the hashmap 
+                // and asking the user to draw the same for sample collection.
                 Random random = new Random();
                 Object[] keys = gesture.keySet().toArray();
-                //System.out.println(gesture);
+                // System.out.println(gesture);
                 String randomges = (String) keys[random.nextInt(keys.length)];
                 gesture.put(randomges.toString(), gesture.get(randomges.toString()) + 1);
-                //System.out.println(gesture.get(randomges.toString()) + "-----" + randomges.toString());
+                // System.out.println(gesture.get(randomges.toString()) + "-----" +
+                // randomges.toString());
                 // Create a label with text
                 randomGesture.replace(0, randomGesture.length(), randomges);
                 String img = "res/image/".concat((randomges.concat(".png")));
@@ -167,10 +205,10 @@ class UiFrame extends JFrame implements MouseListener, MouseMotionListener, Acti
                 Image scaledImage = image.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
                 ImageIcon scaledIcon = new ImageIcon(scaledImage);
                 label.setIcon(scaledIcon);
-                Label2.setText("Draw " + randomGesture+ ". You can refer the below image for reference.");
-                Label3.setText("Draw the gesture in one stroke and click on submit button");
-                Label4.setText(
-                        "Re-draw by clicking re-draw button if the gesture you are not satisfied with the gesture you drew.");
+                Label2.setText("Draw " + randomGesture + ". You can refer the image for reference.");
+                //Label3.setText("Draw the gesture in one stroke and click on submit button");
+                //Label4.setText(
+                  //      "Re-draw by clicking re-draw button if the gesture you are not satisfied with the gesture you drew.");
                 this.setTitle(randomges + " #" + gesture.get(randomges));
                 Filename = new StringBuilder(randomGesture.append(gesture.get(randomges)).toString());
                 // gesture.put(randomges, gesture.get(randomges) + 1);
@@ -178,19 +216,26 @@ class UiFrame extends JFrame implements MouseListener, MouseMotionListener, Acti
                 // w.saveGesture(points, randomGesture.toString(), Filename.toString());
                 // n++;
             }
-            // System.out.println(gesture.get(randomGesture.toString()));
+            // If a gesture say "X" is drawn and its drawn for n times which is less than 10 times,
+            //it will be written to the file and then new random gesture is slected after the canvas is
+            // cleared and old points are discarded.
             else if (gesture.get(randomGesture.toString()) < 10) {
                 n++;
-                //System.out.println("n=" + n);
-                w.saveGesture(points, randomGesture.toString(), Filename.toString(), gesture.get(randomGesture.toString()));
+                // write the drawn gesture to the file and clear the canvas for another gesture to be drawn
+                w.saveGesture(points, randomGesture.toString(), Filename.toString(),
+                        gesture.get(randomGesture.toString()));
                 canvas.setBackground(Color.gray);
                 canvas.repaint();
+                // All the points saved on mouse actions will be cleared after it is written to the file.
                 points.clear();
+                // Selecting a random gedsture from the hashmap 
+                // and asking the user to draw the same for sample collection.
                 Random random = new Random();
                 Object[] keys = gesture.keySet().toArray();
                 String randomges = (String) keys[random.nextInt(keys.length)];
                 gesture.put(randomges.toString(), gesture.get(randomges.toString()) + 1);
-                //System.out.println(gesture.get(randomges.toString()) + "-----" + randomges.toString());
+                // System.out.println(gesture.get(randomges.toString()) + "-----" +
+                // randomges.toString());
                 // System.out.println(randomGesture);
                 // Create a label with text
                 randomGesture.replace(0, randomGesture.length(), randomges);
@@ -203,26 +248,33 @@ class UiFrame extends JFrame implements MouseListener, MouseMotionListener, Acti
                 ImageIcon scaledIcon = new ImageIcon(scaledImage);
                 // Set the icon of the label to the new image
                 label.setIcon(scaledIcon);
-                Label2.setText("Draw " + randomGesture+ ". You can refer the below image for reference.");
+                Label2.setText("Draw " + randomGesture + ". You can refer the image for reference.");
                 this.setTitle(randomges + " #" + gesture.get(randomges));
                 Filename = new StringBuilder(randomGesture.append(gesture.get(randomges)).toString());
                 randomGesture.replace(0, randomGesture.length(), randomges);
                 // System.out.println(Filename);
             }
-        } else if (str.equalsIgnoreCase("Submit") && n == 169) {
+        } // if the user is done drawing all gestures 10 times each 
+        // a popup is displayed on clicking the "submit" button with a thank you message
+        else if (str.equalsIgnoreCase("Submit") && n == 159) {
             n++;
-            //System.out.println("n=" + n);
+            // write the last drawn gesture to the file and clear the canvas 
             w.saveGesture(points, randomGesture.toString(), Filename.toString(), gesture.get(randomGesture.toString()));
             Label1.setText("");
             Label2.setText("");
             Label3.setText(" ");
             Label4.setText(" ");
+            Label5.setText(" ");
+            Label6.setText(" ");
+            Label7.setText(" ");
+
             label.setIcon(null);
             // Note: must call repaint() of canvas
             // to reset the background.
             canvas.setBackground(Color.gray);
             canvas.repaint();
             points.clear();
+            // a dialog box is poped up with a thank you message.
             JOptionPane.showMessageDialog(null, "Task Complete! Thank you for participation. :)");
             remove(button1);
             remove(button2);
@@ -235,8 +287,8 @@ class UiFrame extends JFrame implements MouseListener, MouseMotionListener, Acti
 
     public long startTime, endTime;
 
-    // mouse listener and mouse motion listener methods
-    // mousepressed method to listen to the pressed action of the mouse.
+    // methods for listening to the mouse events and recognizing gestures.
+    // The mousePressed method listens for the press action of the mouse and adds the points to an arraylist.
     public void mousePressed(MouseEvent e) {
         startTime = System.currentTimeMillis();
         Graphics gr = canvas.getGraphics();
@@ -248,12 +300,12 @@ class UiFrame extends JFrame implements MouseListener, MouseMotionListener, Acti
         prevy = e.getY();
         // Adds point prevx and prevy fetched to the list of Array points.
         points.add(new Point((double) prevx, (double) prevy, startTime));
-        // draw a Oval at the point
+        // draw an Oval at the point
         // prevx and prevy
-        gr.fillOval(prevx, prevy, 10, 10);
+        gr.fillOval(prevx, prevy, 15, 10);
     }
 
-    // mousedragged method to listen to the dragged action of the mouse.
+    // The mouseDragged method listens for the drag action of the mouse and adds the points to an array.
     public void mouseDragged(MouseEvent e) {
         endTime = System.currentTimeMillis();
         Graphics gr = canvas.getGraphics();
@@ -358,13 +410,14 @@ class UiFrame extends JFrame implements MouseListener, MouseMotionListener, Acti
 
     }
 }
+// The MyButtonUI class extends the BasicButtonUI class and sets the background color, bounds, and foreground color of the button.
 class MyButtonUI extends javax.swing.plaf.basic.BasicButtonUI {
     @Override
     public void installDefaults(AbstractButton button) {
         super.installDefaults(button);
         button.setBackground(Color.RED); // Set the background color
         button.setOpaque(true); // Ensure that the button is opaque
-        button.setBounds(150, 420, 120, 50);
+        button.setBounds(200, 420, 120, 50);
         button.setForeground(Color.WHITE);
     }
 }
