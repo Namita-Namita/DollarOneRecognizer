@@ -1,3 +1,7 @@
+/*
+ * @author Namita Namita
+ *
+ */
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +21,7 @@ public class PointProcessor {
             if (D + d >= interval) {
                 double qx = previousPoint.x + ((interval - D) / d) * (currentPoint.x - previousPoint.x);
                 double qy = previousPoint.y + ((interval - D) / d) * (currentPoint.y - previousPoint.y);
-                Point point = new Point(qx, qy);
+                Point point = new Point(qx, qy, 0);
                 newPoints.add(point);
                 points.add(i, point);
                 D = 0.0;
@@ -58,7 +62,7 @@ public class PointProcessor {
         ArrayList<Point> translatedPoints = new ArrayList<>();
         Point centroid = centroid(points);
         for (Point p : points) {
-            translatedPoints.add(new Point(p.x - centroid.x, p.y - centroid.y));
+            translatedPoints.add(new Point(p.x - centroid.x, p.y - centroid.y, 0));
         }
         return translatedPoints;
     }
@@ -71,7 +75,7 @@ public class PointProcessor {
             x += point.x;
             y += point.y;
         }
-        return new Point(x / points.size(), y / points.size());
+        return new Point(x / points.size(), y / points.size(), 0);
     }
 
     // boundingBoxsize method to generate a square to fit the gesture and templates
@@ -103,7 +107,7 @@ public class PointProcessor {
                     + (int) centroid.x;
             int y = (int) ((point.x - centroid.x) * Math.sin(angle) + (point.y - centroid.y) * Math.cos(angle))
                     + (int) centroid.y;
-            newPoints.add(new Point(x, y));
+            newPoints.add(new Point(x, y, 0));
         }
         return newPoints;
     }
@@ -194,5 +198,55 @@ public class PointProcessor {
         }
 
         return arrList;
+    }
+    // Golden Section Search (GSS),
+      // an efficient algorithm that finds the minimum value in a range using the Golden Ratio φ=0.5(-1 + √5)
+      public double distanceAtBestAngle(List<Point> points, Point[] T) {
+        double a = -0.25 * Math.PI;
+        double b = 0.25 * Math.PI;
+        double delta = 0.5*(-1+Math.sqrt(5));
+        double threshold = Math.toRadians(2);
+
+        double x1 = delta*a +(1 - delta)*b;
+        double x2 = (1-delta)*a + delta*b;
+
+        double f1 = distanceAtAngle(x1,points,T);
+        double f2 = distanceAtAngle(x2, points, T);
+        while (Math.abs(b - a) > threshold) {
+            if(f1 < f2) {
+                b = x2;
+                x2 = x1;
+                f2 = f1;
+                x1 = delta*a +(1 - delta)*b;
+                f1 = distanceAtAngle(x1, points, T);
+            } else {
+                a = x1;
+                x1 = x2;
+                f1 = f2;
+                x2 = (1-delta)*a + delta*b;
+                f2 = distanceAtAngle(x2, points, T);
+            }
+        }
+        return Math.min(f1, f2);
+    }
+    // method supporting GSS strategy
+    private double distanceAtAngle(double angle, List<Point> points, Point[] T) {
+        List<Point> newPoints = rotateBy(points, angle,new PointProcessor().centroid(points));
+        return pathDistance(newPoints,T);
+    }
+    // computes the distance between two point from a and T paths by summing their corresponding point distances.
+    // private double pathDistance(List<Point> a) {
+    //     double d = 0;
+    //     for (int i = 0; i < Math.min(b.length,a.size()); i++) {
+    //         d += a.get(i)distance(a.get(i-1));
+    //     }
+    //     return d / Math.min(b.length,a.size());
+    // }
+    private double pathDistance(List<Point> a, Point[] b) {
+        double d = 0;
+        for (int i = 0; i < Math.min(b.length,a.size()); i++) {
+            d += distance(a.get(i), b[i]);
+        }
+        return d / Math.min(b.length,a.size());
     }
 }

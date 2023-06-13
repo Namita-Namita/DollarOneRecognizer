@@ -1,3 +1,7 @@
+/*
+ * @author Namita Namita
+ *
+ */
 import java.util.ArrayList;
 
 public class Helper {
@@ -11,14 +15,13 @@ public class Helper {
 
         // iterate though the gesture types
         for (int i = 1; i <= 10; i++) {
-            if (i != 10) {
-                gestureNumber = "0" + i;
-            } else {
-                gestureNumber = Integer.toString(i);
-            }
+                if(i==10)
+                    gestureNumber = Integer.toString(i);
+                else
+                gestureNumber = "0"+i;
 
             // creating log file
-            filename = "xml_logs/" + user + "/fast/" + gestureType + gestureNumber + ".xml";
+            filename = "xml_logs/" + user +"/"+ "medium/"+gestureType + gestureNumber+".xml";
 
             CustomReturnType temp = normalize (ReadXML.Read(filename));
 

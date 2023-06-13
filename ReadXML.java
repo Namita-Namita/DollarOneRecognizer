@@ -1,3 +1,7 @@
+/*
+ * @author Namita Namita
+ *
+ */
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -35,17 +39,23 @@ public class ReadXML {
         Element root = doc.getDocumentElement();
 
         String name = root.getAttribute("Name");
-
+        String gesture;
         // extracting the gesture name
-        String gesture = name.substring(0, name.length() - 2);
-
+        if(name.contains("10")){
+            gesture = name.substring(0, name.length()-2).replaceAll("square","sq").toLowerCase();
+        //  //root.setAttribute("Name", name.toLowerCase());
+        }else{
+         gesture = name.substring(0, name.length()-2).replaceAll("square","sq").toLowerCase();
+         //root.setAttribute("Name", gesture+"0"+name.substring(name.length()-1, name.length()));
+        }
+        
         NodeList nList = doc.getElementsByTagName("Point");
 
         ArrayList<Point> points = new ArrayList<>();
 
         // adding all the points to the points arrayList
         for (int i = 0; i < nList.getLength(); i++) {
-            points.add(new Point(Double.parseDouble(nList.item(i).getAttributes().getNamedItem("X").getNodeValue()), Double.parseDouble(nList.item(i).getAttributes().getNamedItem("Y").getNodeValue())));
+            points.add(new Point(Double.parseDouble(nList.item(i).getAttributes().getNamedItem("X").getNodeValue()), Double.parseDouble(nList.item(i).getAttributes().getNamedItem("Y").getNodeValue()), 0));
         }
 
         return new CustomReturnType(gesture, points);

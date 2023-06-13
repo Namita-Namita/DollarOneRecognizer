@@ -1,3 +1,7 @@
+/*
+ * @author Namita Namita
+ *
+ */
 public class Timer {
     private long startTime;
 

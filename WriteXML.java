@@ -1,5 +1,6 @@
 /*
  * @author Namita Namita
+ *s
  */
 // Import statement for all necessary libraries
 
@@ -24,7 +25,7 @@ public class WriteXML{/**
      */
     public void saveGesture(ArrayList<Point> gesture, String gestureName, String fileName, int num){
         // folder path for the xml file
-        String directoryPath = "xml/".concat(gestureName);
+        String directoryPath = "xml/";
         // file path for the xml file
         String filePath = directoryPath.concat("/").concat(fileName);
 
@@ -54,7 +55,7 @@ public class WriteXML{/**
             // Create a new Element object for the Gesture tag and add attributes.
             Element gestureTag = document.createElement("Gesture");
             //document.appendChild(lineBreak);
-            gestureTag.setAttribute("Name", fileName);
+            gestureTag.setAttribute("Name", fileName.substring(0, fileName.length()-4));
             gestureTag.setAttribute("Number", Integer.toString(num));
             gestureTag.setAttribute("NumPts", Integer.toString(gesture.size()));
             gestureTag.setAttribute("Milliseconds", Integer.toString((int)(gesture.get(gesture.size()-1).getTime()-gesture.get(0).getTime())));

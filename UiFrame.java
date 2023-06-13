@@ -1,7 +1,9 @@
+/*
+ * @author Namita Namita
+ * 
+ */
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.border.Border;
-
 import java.awt.event.*;
 import java.util.*;
 
@@ -10,7 +12,7 @@ import java.util.*;
 // allow the user to clear the canvas. 
 class UiFrame extends JFrame implements MouseListener, MouseMotionListener, ActionListener{
 
-    JButton button1, button2;
+    JButton button;
     Canvas canvas;
     int prevx, prevy;
     // ArrayList DS to store array of points.
@@ -41,24 +43,14 @@ class UiFrame extends JFrame implements MouseListener, MouseMotionListener, Acti
         canvas.setSize(500, 400);
 		add(canvas);
         // Create a clear button labeled Clear
-	    button1 = new JButton ("Re-Draw");
+	    button = new JButton ("Clear");
         // Sets the background of the button to white.
-	    button1.setBackground (Color.white);
+	    button.setBackground (Color.white);
         // button setbounds function to set the sezi and placement of the button
-        button1.setBounds(80 , 400, 100, 50);
-        add(button1);
+        button.setBounds(180 , 400, 100, 50);
+        add(button);
         // Add a listener for the button to listen to the button clicks
-        button1.addActionListener (this);
-        button2 = new JButton ("Submit");
-        // Sets the background of the button to white.
-	    button2.setBackground (Color.white);
-        // button setbounds function to set the sezi and placement of the button
-        button2.setBounds(300 , 400, 100, 50);
-        //Border border = BorderFactory.createLineBorder(Color.BLACK);
-        //button2.setBorder(border);
-        add(button2);
-        // Add a listener for the button to listen to the button clicks
-        button2.addActionListener (this);
+        button.addActionListener (this);
         setVisible(true);
 	}
     // This method is required to implement the  
@@ -67,15 +59,12 @@ class UiFrame extends JFrame implements MouseListener, MouseMotionListener, Acti
     {
 	    String str = e.getActionCommand();
         points.clear();
-        if (str.equalsIgnoreCase ("Re-Draw")) {
+        if (str.equalsIgnoreCase ("Clear")) {
 	    // Note: must call repaint() of canvas 
 	    // to reset the background. 
 	    canvas.setBackground (Color.gray);
 	    canvas.repaint ();
 	    }
-        else if (str.equalsIgnoreCase ("Submit")){
-
-        }
     }
     // mouse listener  and mouse motion listener methods
     // mousepressed method to listen to the pressed action of the mouse.
@@ -89,7 +78,7 @@ class UiFrame extends JFrame implements MouseListener, MouseMotionListener, Acti
         prevx = e.getX();
         prevy = e.getY();
         // Adds point prevx and prevy fetched to the list of Array points.
-        points.add(new Point((double)prevx,(double)prevy));
+        points.add(new Point((double)prevx,(double)prevy, 0));
         // draw a Oval at the point
         // prevx and prevy
         gr.fillOval(prevx, prevy, 10, 10);
@@ -108,7 +97,7 @@ class UiFrame extends JFrame implements MouseListener, MouseMotionListener, Acti
         x = e.getX();
         y = e.getY();
         // Adds point X and Y fetched to the list of Array points.
-        points.add(new Point((double)x,(double)y));
+        points.add(new Point((double)x,(double)y, 0));
 
         // draw a line with the points where mouse is moved
         gr.drawLine(prevx, prevy, x, y);
@@ -131,66 +120,62 @@ class UiFrame extends JFrame implements MouseListener, MouseMotionListener, Acti
     public void mouseEntered(MouseEvent e)
     {
     }
+    // mousereleased method to listen to the released action of the mouse.
     public void mouseReleased(MouseEvent e)
     {
+        /**
+         * start $1 algorithm to recognize the gesture and output the result
+         * Steps involved for the reconition to happen
+         * 1. Resample
+         * 2. Rotate
+         * 3. Scale
+         * 5. Translate
+         * 6. Matching
+         * 7. O/P
+         */
+        long startTime = System.currentTimeMillis();
+        PointProcessor pointProcessor = new PointProcessor();
+        DollarOneRecognizer dollarOneRecognizer = new DollarOneRecognizer();
+
+        // // Resampling the points
+        ArrayList<Point> resampledPoints = pointProcessor.resample(points);
+
+        // //Rotate the points accordingly
+        // // Get the centroid of the gesture drawn
+        Point centroid = pointProcessor.centroid(resampledPoints);
+        // // Get the first poiint after resampling
+        Point firstPoint = resampledPoints.get(0);
+        // // Calculate the slope to get the rotation angle
+        double slope = Math.atan2((firstPoint.y-centroid.y),(firstPoint.x-centroid.x));
+        // // Rotate by function to rotate the points accordingl
+        // //ArrayList<Point> rotatedPoints = pointProcessor.rotateBy(resampledPoints, -1*slope,centroid);
+        ArrayList<Point> rotatedPoints = pointProcessor.rotateBy(resampledPoints, -1*slope,centroid);
+        
+        // //Scale the gesture
+        pointProcessor.scale(rotatedPoints);
+
+        // //Translate the gesture
+        ArrayList<Point> translatedPoints = pointProcessor.translate(rotatedPoints);
+        
+        // //Matching
+        String result = dollarOneRecognizer.recognize(translatedPoints);
+        // // Displaying the match
+        // //String[] str = result.split(" ");
+        String[] str = result.split("-");
+        System.out.println(result);
+        // // Getting the match
+        String templateName = str[0];
+        // // Getting the score
+        double score = Double.parseDouble(str[1]);
+        long endTime = System.currentTimeMillis();
+        // // Set the title to the match found and the score calculated.
+        this.setTitle("Result: "+templateName+" ("+score+") in "+(endTime-startTime)+"ms");
+
+
+        // //Draw the points
+        Graphics gr = canvas.getGraphics();
+        gr.setColor(Color.blue);
     }
-    // mousereleased method to listen to the released action of the mouse.
-    // public void mouseReleased(MouseEvent e)
-    // {
-        
-    //     /**
-    //      * start $1 algorithm to recognize the gesture and output the result
-    //      * Steps involved for the reconition to happen
-    //      * 1. Resample
-    //      * 2. Rotate
-    //      * 3. Scale
-    //      * 5. Translate
-    //      * 6. Matching
-    //      * 7. O/P
-    //      */
-    //     long startTime = System.currentTimeMillis();
-    //     PointProcessor pointProcessor = new PointProcessor();
-    //     DollarOneRecognizer dollarOneRecognizer = new DollarOneRecognizer();
-
-    //     // // Resampling the points
-    //     ArrayList<Point> resampledPoints = pointProcessor.resample(points);
-
-    //     // //Rotate the points accordingly
-    //     // // Get the centroid of the gesture drawn
-    //     Point centroid = pointProcessor.centroid(resampledPoints);
-    //     // // Get the first poiint after resampling
-    //     Point firstPoint = resampledPoints.get(0);
-    //     // // Calculate the slope to get the rotation angle
-    //     double slope = Math.atan2((firstPoint.y-centroid.y),(firstPoint.x-centroid.x));
-    //     // // Rotate by function to rotate the points accordingl
-    //     // //ArrayList<Point> rotatedPoints = pointProcessor.rotateBy(resampledPoints, -1*slope,centroid);
-    //     ArrayList<Point> rotatedPoints = pointProcessor.rotateBy(resampledPoints, -1*slope,centroid);
-        
-    //     // //Scale the gesture
-    //     pointProcessor.scale(rotatedPoints);
-
-    //     // //Translate the gesture
-    //     ArrayList<Point> translatedPoints = pointProcessor.translate(rotatedPoints);
-        
-    //     // //Matching
-    //     String result = dollarOneRecognizer.recognize(translatedPoints);
-    //     // // Displaying the match
-    //     // //String[] str = result.split(" ");
-    //     String[] str = result.split("-");
-    //     System.out.println(result);
-    //     // // Getting the match
-    //     String templateName = str[0];
-    //     // // Getting the score
-    //     double score = Double.parseDouble(str[1]);
-    //     long endTime = System.currentTimeMillis();
-    //     // // Set the title to the match found and the score calculated.
-    //     this.setTitle("Result: "+templateName+" ("+score+") in "+(endTime-startTime)+"ms");
-
-
-    //     // //Draw the points
-    //     Graphics gr = canvas.getGraphics();
-    //     gr.setColor(Color.blue);
-    // }
  
     public static void main (String[] argv)
     {
