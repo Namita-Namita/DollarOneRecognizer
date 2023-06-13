@@ -1,9 +1,7 @@
 # HCIRA_Project1_Part1
 Human-Centered Input Recognition Algorithms - Project 1 Part 1
 
-Group members:-
 - Namita Namita (48479313)
-- Harshwardhan Chauhan (42046851)
 
 Steps to run the project:-
 - Unzip the Project1_Part1.zip file.
