@@ -1,8 +1,7 @@
-Human-Centered Input Recognition Algorithms - Project 1 Part 2
+Human-Centered Input Recognition Algorithms - Project 1 Part 3
 
-###Group members:-
 - Namita Namita (48479313)
-- Harshwardhan Chauhan (42046851)
+
 
 ##System:-
 The application was developed using Java. Implementation was carried out in Microsoft Visual Studio Code, a straightforward yet effective solution that provides all the IDE features required by our team for this specific project.
